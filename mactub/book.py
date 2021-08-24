@@ -6,6 +6,8 @@ import sys
 import random
 import re
 
+from exceptions import MissingHardDisk
+
 
 class Book:
     """Book infos are to be known"""
@@ -21,8 +23,7 @@ class Book:
                 raise MissingHardDisk("Plugin your 'D' drive")
 
         except MissingHardDisk as hdd:
-            print("1)Check path.\n2)" + str(hdd))
-            sys.exit()
+            sys.exit("1)Check book path.\n2)" + str(hdd))
 
     def fetch(self):
         p = self.path.glob('*')
@@ -44,10 +45,3 @@ class Book:
 
     def get_author(self):
         return self.author
-
-
-class MissingHardDisk(Exception):
-    """Exception raised when hard disk not (plugged) on"""
-
-    def __int__(self, message):
-        super.__init__(message)
