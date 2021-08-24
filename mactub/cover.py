@@ -22,20 +22,21 @@ class Cover:
 
     def get_cover(self, face):
         p = self.book_path.glob('*')
-        bindings = [cover.stem for cover in p]
+        bindings = [cover for cover in p]
         book_acronym = ''.join([word[0].upper()
                                 for word in
                                 self.book.split()])
 
         for binding in bindings:
-            if re.search(book_acronym, binding):
+            if re.search(book_acronym, binding.stem):
                 if face == "front":
-                    if binding[-1] == "0":
+                    if binding.stem[-1] == "0":
                         return pathlib.Path(str(self.book_path)
                                             + "/"
-                                            + binding)
+                                            + binding.name)
+
                 else:
-                    if binding[-1] == "1":
+                    if binding.stem[-1] == "1":
                         return pathlib.Path(str(self.book_path)
                                             + "/"
-                                            + binding)
+                                            + binding.name)
