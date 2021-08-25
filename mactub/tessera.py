@@ -20,15 +20,19 @@ def create(image_path):
     return img
 
 
+def resize(img, width, height):
+    resized_img = img.resize((width, height))
+    return resized_img
+
+
 def read(img):
     pytesseract.tesseract_cmd = tesseract_path
     text = pytesseract.image_to_string(img)
-    clean_text = text[:-1].replace("\n\n", "\n")
+    clean_text = text[:-1]
 
     return clean_text
 
 
 def duration(text):
-    # this can be used to calculate the duration of every line and sleep then print
     words_count = len(re.findall(r'\w+', text))
     return (words_count * READ_TIME) / WORD_COUNT
