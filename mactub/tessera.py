@@ -5,8 +5,8 @@ import sys
 import re
 
 tesseract_path = r"C:\Program Files\Tesseract-OCR\tesseract.exe"
-READ_TIME = 240
-WORD_COUNT = 500
+READ_TIME = 24
+WORD_COUNT = 100
 
 
 def create(image_path):
@@ -28,7 +28,7 @@ def resize(img, width, height):
 def read(img):
     pytesseract.tesseract_cmd = tesseract_path
     text = pytesseract.image_to_string(img)
-    clean_text = text[:-1]
+    clean_text = text[:-1].split("\n")
 
     return clean_text
 
