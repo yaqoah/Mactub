@@ -1,6 +1,5 @@
 import argparse
 import pathlib
-import time
 import sys
 
 from tkinter import *
@@ -10,7 +9,8 @@ from cover import Cover
 import tessera
 from __init__ import __version__
 
-showing = None
+cover = None
+synopsis = ""
 
 
 def get_args():
@@ -49,11 +49,51 @@ def get_args():
 
     # may add one here for only image/synopsis
 
+    # add default img
+
     return parser.parse_args()
 
 
+def get_synopsis(args, realm, root, to_show):
+    global cover, synopsis
+
+    realm.config(image=cover)
+
+    limit = 5
+    ended = False
+    for line in synopsis:
+
+        if len(synopsis) == 1:
+            to_show += (line + " \n" + synopsis[0])
+            print(to_show)
+            ended = True
+            break
+
+        if line.isspace():
+            synopsis.remove(line)
+
+        elif limit:
+            to_show += (line + " \n")
+            synopsis.remove(line)
+            limit -= 1
+
+        elif not limit:
+            time_reading = tessera.duration(to_show)
+            print(to_show)
+            to_show = ""
+            to_show += (line + " \n")
+            synopsis.remove(line)
+            break
+
+    if ended:
+        root.after(time_reading, lambda: slideshow(args, realm, root))
+
+    else:
+        root.after(time_reading, lambda: get_synopsis(args, realm, root, to_show))
+
+
 def slideshow(args, realm, root):
-    global showing
+    global cover, synopsis
 
     mac = Book(args.books_path)
     mac.fetch()
@@ -67,49 +107,30 @@ def slideshow(args, realm, root):
     back_cover_path = tub.get_cover("back")
     back_cover_image = tessera.create(back_cover_path)
 
-    root.showing = ImageTk.PhotoImage(tessera.resize(front_cover_image,args.width,args.height), master=root)
-    realm.config(image=root.showing)
-    time.sleep(1.5)
+    front = ImageTk.PhotoImage(tessera.resize(front_cover_image, args.width, args.height), master=root)
+    back = ImageTk.PhotoImage(tessera.resize(back_cover_image, args.width, args.height), master=root)
+    synopsis = tessera.read(back_cover_image)
+    synopsis.append
 
-    showing = ImageTk.PhotoImage(tessera.resize(back_cover_image,args.width,args.height),master=root)
-    realm.config(image=root.showing)
-    text = tessera.read(back_cover_image)
-
-    limit = 5
-    to_show = ""
-    for line in text:
-
-        if line.isspace():
-            to_show += " \n"
-            continue
-
-        if limit and text:
-            to_show += (line + " \n")
-            limit -= 1
-
-        if not limit or not text:
-            time_reading = tessera.duration(to_show)
-            print(to_show)
-            time.sleep(time_reading)
-            limit = 5
-            to_show = ""
-
-    root.after(300, lambda: slideshow(args, realm, root))
+    cover = front  # do I need this line? really?
+    realm.config(image=cover)
+    cover = back
+    root.after(1500, lambda: get_synopsis(args, realm, root, "\n"))
 
 
 def main():
-    global showing
+    global cover
     args = get_args()
 
     root = Tk()
     root.geometry(str(args.width) + "x" + str(args.height))
-    root.showing = ImageTk.PhotoImage(tessera.resize(Image.open("heya.png"),
-                                                args.width,
-                                                args.height),
-                                 master=root)
-    realm = Label(root, image=root.showing)
+    cover = ImageTk.PhotoImage(tessera.resize(Image.open("heya.png"),
+                                              args.width,
+                                              args.height),
+                               master=root)
+    realm = Label(root, image=cover)
     realm.pack()
-    root.after(300, lambda: slideshow(args, realm, root))
+    slideshow(args, realm, root)
     root.mainloop()
 
 
