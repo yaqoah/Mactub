@@ -9,7 +9,7 @@ from exceptions import MissingHardDisk
 class Cover:
     """Get back and front paths"""
 
-    def __init__(self, book, bindings="D:/Books/Covers"):
+    def __init__(self, book, bindings):
         self.book = book
 
         try:
