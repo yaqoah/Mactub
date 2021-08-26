@@ -12,7 +12,7 @@ from exceptions import MissingHardDisk
 class Book:
     """Book infos are to be known"""
 
-    def __init__(self, shelf="D:/Books/Texts"):
+    def __init__(self, shelf):
         self.exhibited = []
         self.title = ""
         self.author = ""
