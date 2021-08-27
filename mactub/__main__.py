@@ -28,7 +28,7 @@ def get_args():
 
     parser.add_argument("--height", metavar="'px'",
                         help="What height to display book cover in",
-                        default=590)
+                        default=620)
 
     parser.add_argument("--books_path", metavar="'path/to/dir",
                         help="Path to folder containing "
@@ -54,48 +54,53 @@ def get_args():
     return parser.parse_args()
 
 
-def get_synopsis(args, realm, root, to_show):
+def get_synopsis(mac, args, realm, root, to_show, index, last):
     global cover, synopsis
 
     realm.config(image=cover)
 
     limit = 5
     ended = False
-    for line in synopsis:
 
-        if len(synopsis) == 1:
-            to_show += (line + " \n" + synopsis[0])
+    for line in synopsis[index+1:]:
+
+        if line == last:
+            to_show += ("\n" + line)
+            time_reading = tessera.duration(to_show)
             print(to_show)
             ended = True
             break
 
-        if line.isspace():
-            synopsis.remove(line)
-
-        elif limit:
-            to_show += (line + " \n")
-            synopsis.remove(line)
-            limit -= 1
-
-        elif not limit:
+        if not limit:
             time_reading = tessera.duration(to_show)
             print(to_show)
-            to_show = ""
-            to_show += (line + " \n")
-            synopsis.remove(line)
-            break
+
+            if not line.strip():
+                limit += 1
+                continue
+
+            else:
+                to_show = ""
+                to_show += ("\n" + line)
+                index = synopsis.index(line)
+                break
+
+        if limit:
+            to_show += ("\n" + line)
+            limit -= 1
+            index = synopsis.index(line)
 
     if ended:
-        root.after(time_reading, lambda: slideshow(args, realm, root))
+        print("It ends here <<<")
+        root.after(time_reading, lambda: slideshow_manager(mac, args, realm, root))
 
     else:
-        root.after(time_reading, lambda: get_synopsis(args, realm, root, to_show))
+        root.after(time_reading, lambda: get_synopsis(mac, args, realm, root, to_show, index, last))
 
 
-def slideshow(args, realm, root):
+def slideshow_manager(mac, args, realm, root):
     global cover, synopsis
 
-    mac = Book(args.books_path)
     mac.fetch()
     name = mac.get_title()
     author = mac.get_author()
@@ -103,24 +108,37 @@ def slideshow(args, realm, root):
 
     tub = Cover(name, args.covers_path)
     front_cover_path = tub.get_cover("front")
-    front_cover_image = tessera.create(front_cover_path)
+    front_cover_image = tessera.resize(tessera.create(front_cover_path), args.width, args.height)
     back_cover_path = tub.get_cover("back")
     back_cover_image = tessera.create(back_cover_path)
+    temp = tessera.resize(front_cover_image, args.width, args.height)
 
-    front = ImageTk.PhotoImage(tessera.resize(front_cover_image, args.width, args.height), master=root)
+    front = ImageTk.PhotoImage(front_cover_image, master=root)
+
+    cover = front
+    realm.config(image=front)
+    realm.front_cover_image = front
+
     back = ImageTk.PhotoImage(tessera.resize(back_cover_image, args.width, args.height), master=root)
     synopsis = tessera.read(back_cover_image)
-    synopsis.append
 
-    cover = front  # do I need this line? really?
-    realm.config(image=cover)
+    for line in reversed(synopsis):
+
+        if not line.strip():
+            continue
+
+        else:
+            last = line
+            break
+
     cover = back
-    root.after(1500, lambda: get_synopsis(args, realm, root, "\n"))
+    root.after(7000, lambda: get_synopsis(mac, args, realm, root, "\n", -1, last))
 
 
 def main():
     global cover
     args = get_args()
+    mac = Book(args.books_path)
 
     root = Tk()
     root.geometry(str(args.width) + "x" + str(args.height))
@@ -130,7 +148,7 @@ def main():
                                master=root)
     realm = Label(root, image=cover)
     realm.pack()
-    slideshow(args, realm, root)
+    root.after(200, lambda: slideshow_manager(mac, args, realm, root))
     root.mainloop()
 
 
