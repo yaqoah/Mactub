@@ -9,16 +9,14 @@ from cover import Cover
 import tessera
 from __init__ import __version__
 
-cover = None
-synopsis = ""
+mac, args, realm, root, synopsis, cover = [None for var in range(6)]
 
 
 def get_args():
     """get script CL arguments"""
 
-    description = "Mactub - Access and view books downloaded " \
-                  "in device,to assist in selecting " \
-                  "by reading short synopsis"
+    description = "~Mactub~ Access books in a device" \
+                  " and print synopsis in back"
 
     parser = argparse.ArgumentParser(description=description)
 
@@ -30,39 +28,52 @@ def get_args():
                         help="What height to display book cover in",
                         default=620)
 
-    parser.add_argument("--books_path", metavar="'path/to/dir",
+    parser.add_argument("--books_path", metavar="'path/to/dir'",
                         help="Path to folder containing "
                              "(i.e: .PDF,.EPUB,.TXT)"
                              "book files",
                         default=pathlib.Path("D:/Books/Texts"),
                         type=pathlib.Path)
 
-    parser.add_argument("--covers_path", metavar="'path/to/dir",
+    parser.add_argument("--covers_path", metavar="'path/to/dir'",
                         help="Path to folder containing "
                              "(i.e: .PNG,.JPEG,.GIF)"
                              "book covers (back,front) file",
                         default=pathlib.Path("D:/Books/Covers"),
                         type=pathlib.Path)
 
+    parser.add_argument("--default_img", metavar="'path/to/dir'",
+                        help="What image will be displayed "
+                             "upon initialisation of window",
+                        default=pathlib.Path("D:/Books/Covers/heya.png"),
+                        type=pathlib.Path)
+
     parser.add_argument("--version", action="store_true",
-                        help="print Mactub version")
+                        help="'Mactub' version")
 
-    # may add one here for only image/synopsis
-
-    # add default img
+    parser.add_argument("--display", action="store_true",
+                        help="Allow slideshow view of book covers"
+                             "in synchrony with "
+                             "synopsis of book printed")
 
     return parser.parse_args()
 
 
-def get_synopsis(mac, args, realm, root, to_show, index, last):
-    global cover, synopsis
+def get_synopsis(to_show, index, last):
+    """
+    Prints out text in back cover periodically
+    :param to_show: predetermined text to show for following period
+    :param index: index of list to start adding to text string from
+    :param last: last element in list
+    """
+    global realm, cover, synopsis
 
     realm.config(image=cover)
 
     limit = 5
     ended = False
 
-    for line in synopsis[index+1:]:
+    for line in synopsis[index + 1:]:
 
         if line == last:
             to_show += ("\n" + line)
@@ -91,15 +102,18 @@ def get_synopsis(mac, args, realm, root, to_show, index, last):
             index = synopsis.index(line)
 
     if ended:
-        print("It ends here <<<")
-        root.after(time_reading, lambda: slideshow_manager(mac, args, realm, root))
+        root.after(time_reading, lambda: slideshow_manager())
 
     else:
-        root.after(time_reading, lambda: get_synopsis(mac, args, realm, root, to_show, index, last))
+        root.after(time_reading, lambda: get_synopsis(to_show, index, last))
 
 
-def slideshow_manager(mac, args, realm, root):
-    global cover, synopsis
+def slideshow_manager():
+    """
+    Chooses book to present is image slideshow
+    and show synopsis in console
+    """
+    global mac, cover, realm, synopsis, args, root
 
     mac.fetch()
     name = mac.get_title()
@@ -132,23 +146,24 @@ def slideshow_manager(mac, args, realm, root):
             break
 
     cover = back
-    root.after(7000, lambda: get_synopsis(mac, args, realm, root, "\n", -1, last))
+    root.after(7000, lambda: get_synopsis("\n", -1, last))
 
 
 def main():
-    global cover
+    global args, mac, root, cover, realm
+
     args = get_args()
     mac = Book(args.books_path)
 
     root = Tk()
     root.geometry(str(args.width) + "x" + str(args.height))
-    cover = ImageTk.PhotoImage(tessera.resize(Image.open("heya.png"),
+    cover = ImageTk.PhotoImage(tessera.resize(Image.open(args.default_img),
                                               args.width,
                                               args.height),
                                master=root)
     realm = Label(root, image=cover)
     realm.pack()
-    root.after(200, lambda: slideshow_manager(mac, args, realm, root))
+    root.after(200, lambda: slideshow_manager())
     root.mainloop()
 
 
