@@ -30,11 +30,11 @@ class Book:
         books = [book for book in p if book not in self.exhibited]
 
         if books:
-            book = random.choice(books).stem
-            info = re.split(" By ", book)
+            book = random.choice(books)
+            self.exhibited.append(book)
+            info = re.split(" By ", book.stem)
             self.title = info[0]
             self.author = info[1]
-            self.exhibited.append(book)
 
         else:
             self.exhibited = []
