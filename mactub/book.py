@@ -48,12 +48,10 @@ class Book:
         """
         :return: title of book
         """
-
         return self.title
 
     def get_author(self):
         """
         :return: author name of book
         """
-
         return self.author
