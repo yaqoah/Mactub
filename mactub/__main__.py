@@ -1,15 +1,13 @@
 import argparse
 import pathlib
-import sys
 
 from tkinter import *
-from PIL import ImageTk, Image
+from PIL import ImageTk
 from book import Book
 from cover import Cover
 import tessera
-from __init__ import __version__
 
-mac, args, realm, root, synopsis, cover = [None for var in range(6)]
+novel, args, novels_label, root, synopsis, cover = [None for var in range(6)]
 
 
 def get_args():
@@ -26,7 +24,7 @@ def get_args():
 
     parser.add_argument("--height", metavar="'px'",
                         help="What height to display book cover in",
-                        default=620)
+                        default=640)
 
     parser.add_argument("--books_path", metavar="'path/to/dir'",
                         help="Path to folder containing "
@@ -66,9 +64,9 @@ def get_synopsis(to_show, index, last):
     :param index: index of list to start adding to text string from
     :param last: last element in list
     """
-    global realm, cover, synopsis
+    global novels_label, cover, synopsis
 
-    realm.config(image=cover)
+    novels_label.config(image=cover)
 
     limit = 5
     ended = False
@@ -105,7 +103,9 @@ def get_synopsis(to_show, index, last):
         root.after(time_reading, lambda: slideshow_manager())
 
     else:
-        root.after(time_reading, lambda: get_synopsis(to_show, index, last))
+        root.after(time_reading, lambda: get_synopsis(to_show,
+                                                      index,
+                                                      last))
 
 
 def slideshow_manager():
@@ -113,28 +113,32 @@ def slideshow_manager():
     Chooses book to present is image slideshow
     and show synopsis in console
     """
-    global mac, cover, realm, synopsis, args, root
+    global novel, cover, novels_label, synopsis, args, root
 
-    mac.fetch()
-    name = mac.get_title()
-    author = mac.get_author()
-    print(f"{author}-  author of: {name}")
+    novel.fetch()
+    name = novel.get_title()
+    author = novel.get_author()
 
     tub = Cover(name, args.covers_path)
     front_cover_path = tub.get_cover("front")
-    front_cover_image = tessera.resize(tessera.create(front_cover_path), args.width, args.height)
+    front_cover_image = tessera.resize(tessera.create(front_cover_path),
+                                       args.width,
+                                       args.height)
     back_cover_path = tub.get_cover("back")
     back_cover_image = tessera.create(back_cover_path)
-    temp = tessera.resize(front_cover_image, args.width, args.height)
 
     front = ImageTk.PhotoImage(front_cover_image, master=root)
 
     cover = front
-    realm.config(image=front)
-    realm.front_cover_image = front
-
-    back = ImageTk.PhotoImage(tessera.resize(back_cover_image, args.width, args.height), master=root)
+    print(f"{author}-  author of: {name}")
+    novels_label.config(image=front)
+    novels_label.front_cover_image = front
     synopsis = tessera.read(back_cover_image)
+
+    back = ImageTk.PhotoImage(tessera.resize(back_cover_image,
+                                             args.width,
+                                             args.height),
+                              master=root)
 
     for line in reversed(synopsis):
 
@@ -150,19 +154,19 @@ def slideshow_manager():
 
 
 def main():
-    global args, mac, root, cover, realm
+    global args, novel, root, cover, novels_label
 
     args = get_args()
-    mac = Book(args.books_path)
+    novel = Book(args.books_path)
 
     root = Tk()
     root.geometry(str(args.width) + "x" + str(args.height))
-    cover = ImageTk.PhotoImage(tessera.resize(Image.open(args.default_img),
+    cover = ImageTk.PhotoImage(tessera.resize(tessera.create(args.default_img),
                                               args.width,
                                               args.height),
                                master=root)
-    realm = Label(root, image=cover)
-    realm.pack()
+    novels_label = Label(root, image=cover)
+    novels_label.pack()
     root.after(200, lambda: slideshow_manager())
     root.mainloop()
 
