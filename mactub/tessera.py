@@ -19,11 +19,9 @@ def create(image_path):
     :return: PIL image created
     """
 
-    img = None
-
     try:
         img = Image.open(image_path)
-    except FileNotFoundError as f:
+    except FileNotFoundError:
         sys.exit(1)
 
     return img
