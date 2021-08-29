@@ -1,0 +1,5 @@
+dist/*
+mactub.egg-info/
+*.pyc
+build/*
+.idea/
