@@ -11,7 +11,7 @@ presenting a slideshow of books available by cover in a window.
 
 ## Installation
 
-    pip3 install -user mactub
+    pip3 install --user mactub
 
 ## Usage 
 
