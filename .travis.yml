@@ -7,4 +7,4 @@ install:
   - pip install .
 
 script:
-  -flake8 Mactub setup.py
+  -flake8 .
