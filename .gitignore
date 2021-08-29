@@ -3,3 +3,4 @@ mactub.egg-info/
 *.pyc
 build/*
 .idea/
+.flake8
