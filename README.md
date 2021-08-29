@@ -1,7 +1,7 @@
 # :green_book: Mactub
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/0.0.1)](https://pypi.python.org/pypi/ansicolortags/)
-[![MIT license](https://img.shields.io/github/license/yaqoah/Mactub)](https://lbesson.mit-license.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Build Status](https://img.shields.io/travis/com/yaqoah/Mactub)](https://app.travis-ci.com/github/yaqoah/Mactub)
 
 ***Mactub*** is a daemon that accesses books by ```path``` 
