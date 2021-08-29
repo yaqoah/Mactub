@@ -2,7 +2,7 @@
 
 [![PyPI version shields.io](https://img.shields.io/pypi/v/0.0.1)](https://pypi.python.org/pypi/ansicolortags/)
 [![MIT license](https://img.shields.io/github/license/yaqoah/Mactub)](https://lbesson.mit-license.org/)
-[![Build Status](https://img.shields.io/travis/com/yaqoah/Mactub)](https://travis-ci.org/azu/travis-badge)
+[![Build Status](https://img.shields.io/travis/com/yaqoah/Mactub)](https://app.travis-ci.com/github/yaqoah/Mactub)
 
 ***Mactub*** is a daemon that accesses books by ```path``` 
 and reads downloaded book jackets in a specified directory, 
