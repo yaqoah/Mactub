@@ -5,9 +5,9 @@
 [![Build Status](https://img.shields.io/travis/com/yaqoah/Mactub)](https://app.travis-ci.com/github/yaqoah/Mactub)
 
 ***Mactub*** is a daemon that accesses books by ```path``` 
-and reads downloaded book jackets in a specified directory, 
+and reads downloaded book jackets in the specified directory, 
 to generate the synopsis of a book in the console periodically,
-presenting a slideshow of books available by cover in a window.
+presenting a slideshow of books available by cover in synchrony via a window.
 
 ## Installation
 
@@ -15,7 +15,7 @@ presenting a slideshow of books available by cover in a window.
 
 ## Usage 
 
-```bash
+```
 usage: mactub [-h] [--width 'px'] [--height 'px'] [--books_path 'path/to/dir'] [--covers_path 'path/to/dir'] [--default_img 'path/to/dir'] [--version]
 
 mactub - Read and display books and respective synopsis periodically.
