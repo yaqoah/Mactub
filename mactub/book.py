@@ -1,10 +1,9 @@
 """
 Dust shalt thou be blown
 """
-import pathlib
+import re
 import sys
 import random
-import re
 
 from exceptions import MissingHardDisk
 
@@ -16,8 +15,8 @@ class Book:
         """Initialize book object """
 
         self.exhibited = []
-        self.title = ""
-        self.author = ""
+        self.__title = ""
+        self.__author = ""
 
         try:
             self.path = shelf
@@ -37,8 +36,8 @@ class Book:
             book = random.choice(books)
             self.exhibited.append(book)
             info = re.split(" By ", book.stem)
-            self.title = info[0]
-            self.author = info[1]
+            self.__title = info[0]
+            self.__author = info[1]
 
         else:
             self.exhibited = []
@@ -48,10 +47,10 @@ class Book:
         """
         :return: title of book
         """
-        return self.title
+        return self.__title
 
     def get_author(self):
         """
         :return: author name of book
         """
-        return self.author
+        return self.__author
