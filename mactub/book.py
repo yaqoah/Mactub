@@ -10,13 +10,13 @@ from exceptions import MissingHardDisk
 
 class Book:
     """Book infos are to be known"""
-
+    __title = ""
+    __author = ""
+    
     def __init__(self, shelf):
         """Initialize book object """
 
         self.exhibited = []
-        self.__title = ""
-        self.__author = ""
 
         try:
             self.path = shelf
